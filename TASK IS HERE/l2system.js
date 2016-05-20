@@ -13,33 +13,46 @@ function pressButtonOne(){
   }
 }
 function parseString(pressStep, pressAngle, pressTurnAngle, pressRule, pressNewRule){
-  var canvas = document.getElementById("cvs"),
-  ctx = canvas.getContext('2d');
-  ctx.fillStyle="#9999ff";
-
+  var rule = pressRule; //"F";
+  var newRule = pressNewRule; //"-F+F+[+F-F-]-[-F+F+F]";
+  var step = pressStep;
+  var startPoint = new Point(50, 400);
+  //var drawArray = [];
+  for(var i = 0; i <= step; i++){
+    console.log("Step " + i);
+    //console.log(rule);
+    //drawArray.length = 0;
+    draw(rule);
+    rule = rule.replace(/F/g,newRule)
+    nextPoint = startPoint;
+    //console.log(drawArray.length);
+    //draw(drawArray, startPoint);
+  }
+}
+function draw(rule){
   var stepLength = 10;
   var startPoint = new Point(50, 400);
   var nextPoint = startPoint;
   var newPoint;
-  var step = pressStep;
+  var pressAngle = document.getElementById("txt1").value;
+  var pressTurnAngle = document.getElementById("txt2").value;
   var angle = pressAngle; //-Math.PI/3;
   var turnAngle = pressTurnAngle; //Math.PI/8;
-  var rule = pressRule; //"F";
-  var newRule = pressNewRule; //"-F+F+[+F-F-]-[-F+F+F]";
   var savePositionsX = [];
   var savePositionsY = [];
   var saveAngle = [];
-
-  for(var i = 0; i <= step; i++){
-    //console.log("Step " + i);
-    //console.log(rule);
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.beginPath();
-    for(var j = 0; j < rule.length; j++){
+  var canvas = document.getElementById("cvs"),
+  ctx = canvas.getContext('2d');
+  ctx.fillStyle="#9999ff";
+  ctx.beginPath();
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.moveTo(startPoint.x, startPoint.y);
+  for(var j = 0; j < rule.length; j++){
+    console.log(rule[j]);
       switch (rule[j]){
         case 'F':
-          ctx.moveTo(nextPoint.x, nextPoint.y)
           newPoint = new Point(nextPoint.x + (stepLength)*Math.cos(angle), nextPoint.y + (stepLength)*Math.sin(angle));
+          //drawArray.push(newPoint);
           ctx.lineTo(newPoint.x, newPoint.y);
           nextPoint = newPoint;
           break;
@@ -58,6 +71,8 @@ function parseString(pressStep, pressAngle, pressTurnAngle, pressRule, pressNewR
           nextPoint.x = savePositionsX.pop();
           nextPoint.y = savePositionsY.pop();
           angle = saveAngle.pop();
+          //drawArray.push("move");
+          //drawArray.push(nextPoint);
           ctx.moveTo(nextPoint.x, nextPoint.y)
           break;
         default:
@@ -65,8 +80,23 @@ function parseString(pressStep, pressAngle, pressTurnAngle, pressRule, pressNewR
           break;
       }
     }
-    rule = rule.replace(/F/g,newRule)
-    nextPoint = startPoint;
     ctx.stroke();
-  }
+    savePositionsX = [];
+    savePositionsY = [];
+    saveAngle = [];
 }
+/*function draw(array,startPoint){
+
+  var drawPoint = new Point(0,0);
+  while(array.length != 0){
+    console.log(array[0]);
+    drawPoint = array.shift();
+    if(drawPoint == "move"){
+        drawPoint = array.shift();
+        ctx.moveTo(drawPoint.x, drawPoint.y);
+    }
+    else{
+      ctx.lineTo(drawPoint.x, drawPoint.y);
+    }
+  }
+}*/
